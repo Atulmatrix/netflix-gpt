@@ -1,11 +1,67 @@
-import React, { useState } from "react";
+import { useRef, useState } from "react";
 import Header from "./Header";
+import { checkValidData } from "../utils/validate";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../utils/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 const Login = () => {
   const [existingUser, setExistingUser] = useState(true);
+  const name = useRef(null);
+  const email = useRef(null);
+  const password = useRef(null);
+  const [errmsg, setErrmsg] = useState(null);
 
   const toggleSignForm = () => {
     setExistingUser(!existingUser);
+  };
+
+  const handleButtonClick = () => {
+    // console.log(email.current.value);
+    // console.log(password.current.value);
+    const err = checkValidData(email.current.value, password.current.value);
+
+    // console.log(err);
+    setErrmsg(err);
+
+    if (err) return;
+
+    if (!existingUser) {
+      createUserWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+          console.log(user);
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrmsg(errorCode + "-" + errorMessage);
+        });
+    } else {
+      // signIn Logic
+
+      signInWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log(user);
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrmsg(errorCode + "-" + errorMessage);
+        });
+    }
   };
 
   return (
@@ -26,22 +82,35 @@ const Login = () => {
         </h1>
         {!existingUser && (
           <input
+            ref={name}
             type="text"
             placeholder="Name"
             className="p-2 m-2 w-full bg-gray-700 rounded-lg"
           />
         )}
         <input
+          ref={email}
           type="text"
           placeholder="Email"
           className="p-2 m-2 w-full bg-gray-700 rounded-lg"
+          onClick={() => {
+            setErrmsg("");
+          }}
         />
         <input
-          type="text"
+          ref={password}
+          type="password"
           placeholder="Password"
           className="p-2 m-2 w-full bg-gray-700 rounded-lg"
+          onClick={() => {
+            setErrmsg("");
+          }}
         />
-        <button className="bg-red-700 w-full m-2 p-2 rounded-lg">
+        <p className="text-red-600">{errmsg}</p>
+        <button
+          className="bg-red-700 w-full m-2 p-2 rounded-lg"
+          onClick={handleButtonClick}
+        >
           {existingUser ? "SignIn" : "SignUp"}
         </button>
         <p className="p-4 cursor-pointer" onClick={toggleSignForm}>
