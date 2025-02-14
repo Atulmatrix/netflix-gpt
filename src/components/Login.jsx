@@ -4,14 +4,13 @@ import { checkValidData } from "../utils/validate";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../utils/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { USER_AVATAR } from "../utils/constant";
 import { updateProfile } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
 
 const Login = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [existingUser, setExistingUser] = useState(true);
   const name = useRef(null);
   const email = useRef(null);
@@ -43,8 +42,7 @@ const Login = () => {
           const user = userCredential.user;
           updateProfile(auth.currentUser, {
             displayName: name.current.value,
-            photoURL:
-              "https://media.licdn.com/dms/image/v2/C4E03AQGK3F8MvQFEQQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1621360162249?e=1744848000&v=beta&t=0SsCUYh7dVf-tdacSOmGRXMFnmozIeeE8lTq7Rx3MpU",
+            photoURL: USER_AVATAR,
           })
             .then(() => {
               const { uid, email, displayName, photoURL } = userCredential.user;
@@ -56,7 +54,7 @@ const Login = () => {
                   photoURL: photoURL,
                 })
               );
-              navigate("/browse");
+              // navigate("/browse");
             })
             .catch((error) => {
               // An error occurred
@@ -64,7 +62,7 @@ const Login = () => {
               setErrmsg(error.message);
             });
           console.log(user);
-          navigate("/browse");
+          // navigate("/browse");
           // ...
         })
         .catch((error) => {
@@ -84,7 +82,7 @@ const Login = () => {
           // Signed in
           const user = userCredential.user;
           console.log(user);
-          navigate("/browse");
+          // navigate("/browse");
         })
         .catch((error) => {
           const errorCode = error.code;
