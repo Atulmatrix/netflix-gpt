@@ -8,9 +8,10 @@ const Browse = () => {
   useNowPlayingMovies();
   return (
     <>
+      <Header />
       <MainContainer />
       <SecondaryContainer />
-      <Header />
+
       {/* MainContainer
      -VideoBackGround
      -VideoTitle
